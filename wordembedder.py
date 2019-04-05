@@ -1,52 +1,49 @@
 import gensim as gen
 import tensorflow as tf
 import numpy as np
-from sentence_splitter import SentenceSplitter, split_text_into_sentences
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
 
 class Wordembedder:
 	"""
+	How to 
 	from wordembedder import Wordembedder
-	X = Wordembedder(text).tokenized_data
+	X = Wordembedder(docs).embedding_matrix
+	
+	docs = list of sentence in document
 	"""
-
-	def __init__(self, text):
+	def __init__(self, docs):
 		filename = 'GoogleNews-vectors-negative300.bin'
 		self._wordvector = gen.models.KeyedVectors.load_word2vec_format(filename, binary=True, limit=500000)
-		self._tokenized_data = self.embed(self.tokenize(text))
+		self._embedding_matrix = self.createEmbeddingMatrix(docs)
 
 	@property
 	def wordvector(self):
 		return self._wordvector
 
 	@property
-	def tokenized_data(self):
-		return self._tokenized_data
+	def embedding_matrix(self):
+		return self._embedding_matrix
 
-	def tokenize(self, text):
-		tokenized_text = []
-		ar_sent = SentenceSplitter(language='en').split(text)
-		for sentence in ar_sent:
-			tokenized_text.append(tf.keras.preprocessing.text.text_to_word_sequence(sentence, 
-				filters='!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n\xa01234567890',
-				lower=True,
-				split=' ')
-			)
-		return  tokenized_text
+	def createEmbeddingMatrix(self, docs):
+		t = Tokenizer(filters='!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n\xa001234567890', lower=True)
+		t.fit_on_texts(docs)
+		vocab_size = len(t.word_index) + 1
+		encoded_docs = t.texts_to_sequences(docs)
+		max_length = max([len(encoded_sent) for encoded_sent in encoded_docs])
+		padded_docs = pad_sequences(encoded_docs, maxlen=max_length, padding='post')
+		embedding_dim = 300
+		embedding_matrix = np.zeros((vocab_size, embedding_dim))
+		for word, i in t.word_index.items():
+		    try:
+		        embedding_vector = wordvector[word] #wordvector = model dari Google
+		    except:
+		        embedding_vector = np.random.rand(embedding_dim)
+		    embedding_matrix[i] = embedding_vector
 
-	def embed(self, tokenized_text):
-		encoded_docs = []
-		for tokenized_sent in tokenized_text:
-		    encoded_sent = []
-		    for term in tokenized_sent:
-		        try:
-		            encoded_sent.append(self._wordvector.vocab[term].index)
-		        except:
-		            pass
-		    encoded_docs.append(encoded_sent)
-		
-		mx = max([len(encoded_sent) for encoded_sent in encoded_docs])
-		X_w2v = tf.keras.preprocessing.sequence.pad_sequences(encoded_docs, maxlen=mx, padding='post')
-		
-		return X_w2v
+		return embedding_matrix
+
+
+	
 
 
