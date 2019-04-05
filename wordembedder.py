@@ -11,10 +11,15 @@ class Wordembedder:
 	X = Wordembedder(docs).embedding_matrix
 	
 	docs = list of sentence in document
+	example:
+	docs = ['this is sentence 1',
+		'this is sentence 2',
+		'this is last sentence'
+		]
 	"""
 	def __init__(self, docs):
 		filename = 'GoogleNews-vectors-negative300.bin'
-		self._wordvector = gen.models.KeyedVectors.load_word2vec_format(filename, binary=True, limit=500000)
+		self._wordvector = gen.models.KeyedVectors.load_word2vec_format(filename, binary=True)
 		self._embedding_matrix = self.createEmbeddingMatrix(docs)
 
 	@property
