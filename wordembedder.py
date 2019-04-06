@@ -49,9 +49,12 @@ class Wordembedder:
 
 		return padded_docs
 
-	def createEmbeddingMatrix(self):
+	def loadWordVector(self):
 		filename = 'GoogleNews-vectors-negative300.bin'
-		wordvector = gen.models.KeyedVectors.load_word2vec_format(filename, binary=True)
+		return gen.models.KeyedVectors.load_word2vec_format(filename, binary=True)
+
+	def createEmbeddingMatrix(self):
+		wordvector = self.loadWordVector()
 		embedding_dim = 300
 		embedding_matrix = np.zeros((self._vocab_size, embedding_dim))
 		for word, i in self._tokenizer.word_index.items():
