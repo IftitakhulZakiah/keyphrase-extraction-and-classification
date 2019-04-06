@@ -20,7 +20,7 @@ def train_lstm(X, y):
     model.add(Activation('softmax'))
     for epoch in range(100):
         model.fit(X, y, epoch=1, batch_size=20, verbose=2)
-        
+
     model.predict_classes(X_test, verbose=0)
     # for i in range
 
