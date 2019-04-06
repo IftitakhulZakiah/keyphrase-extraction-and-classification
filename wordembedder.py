@@ -31,7 +31,7 @@ class Wordembedder:
 		return self._embedding_matrix
 
 	def createEmbeddingMatrix(self, docs):
-		t = Tokenizer(filters='!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n\xa001234567890', lower=True)
+		t = Tokenizer(filters='!"#$%&()*+,-./:;<=>?@[\\]^_`{|}~\t\n\xa0', lower=True)
 		t.fit_on_texts(docs)
 		vocab_size = len(t.word_index) + 1
 		encoded_docs = t.texts_to_sequences(docs)
