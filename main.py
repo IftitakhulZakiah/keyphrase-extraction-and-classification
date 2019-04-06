@@ -20,7 +20,7 @@ def train_lstm(X, y):
     model.add(Activation('softmax'))
     for epoch in range(100):
         model.fit(X, y, epoch=1, batch_size=20, verbose=2)
-
+        
     model.predict_classes(X_test, verbose=0)
     # for i in range
 
@@ -34,11 +34,12 @@ if __name__ == "__main__":
 
     token = nltk.word_tokenize(reader.publications[0].text)
     postag = nltk.pos_tag(token)
-    X = Wordembedder(reader._publications[0].text).tokenized_data
+    X = Wordembedder(reader._publications[0].text).embedding_matrix
+    print(token)
     max_len = -1
-    for pub in reader.publications:
-        sentences = SentenceSplitter(language='en').split(pub.text)
-        for sent in sentences:
-            len = nltk.word_tokenize(sent).length()
-            max_len = len if len > max_len else max_len
-    print(max_len)
+    # for pub in reader.publications:
+    #     sentences = SentenceSplitter(language='en').split(pub.text)
+    #     for sent in sentences:
+    #         length = nltk.word_tokenize(sent).length()
+    #         max_len = length if length > max_len else max_len
+    # print(max_len)
