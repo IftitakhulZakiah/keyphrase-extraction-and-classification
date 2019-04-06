@@ -15,7 +15,7 @@ class Wordembedder:
 	def __init__(self, docs, filename=None):
 		self._encoded_docs = self.encodeDocs(docs)
 		if filename:
-			self._embedding_matrix = self.loadFromFile(filename)
+			self.loadFromFile(filename)
 		else:
 			self._embedding_matrix = self.createEmbeddingMatrix()
 
@@ -35,22 +35,29 @@ class Wordembedder:
 	def max_length(self):
 		return self._max_length
 
+	@property
+	def tokenizer(self):
+		return self._tokenizer
+
 	def encodeDocs(self, docs):
-		t = Tokenizer(filters='!"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~', lower=True, split=None)
-		t.fit_on_texts(docs)
-		self._vocab_size = len(t.word_index) + 1
-		encoded_docs = t.texts_to_sequences(docs)
+		self._tokenizer = Tokenizer(filters='!"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~', lower=True, split=None)
+		self._tokenizer.fit_on_texts(docs)
+		self._vocab_size = len(self._tokenizer.word_index) + 1
+		encoded_docs = self._tokenizer.texts_to_sequences(docs)
 		self._max_length = max([len(encoded_sent) for encoded_sent in encoded_docs])
 		padded_docs = pad_sequences(encoded_docs, maxlen=self._max_length, padding='post')
 
 		return padded_docs
 
-	def createEmbeddingMatrix(self):
+	def loadWordVector(self):
 		filename = 'GoogleNews-vectors-negative300.bin'
-		wordvector = gen.models.KeyedVectors.load_word2vec_format(filename, binary=True)
+		return gen.models.KeyedVectors.load_word2vec_format(filename, binary=True)
+
+	def createEmbeddingMatrix(self):
+		wordvector = self.loadWordVector()
 		embedding_dim = 300
 		embedding_matrix = np.zeros((self._vocab_size, embedding_dim))
-		for word, i in t.word_index.items():
+		for word, i in self._tokenizer.word_index.items():
 		    try:
 		        embedding_vector = wordvector[word] #wordvector = model dari Google
 		    except:

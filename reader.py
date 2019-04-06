@@ -23,9 +23,9 @@ class Reader:
                 for row in csv.reader(inputfile):
                     for sent in enumerate(row):
                         if sent[0] != 0:
-                            text += ',' + sent[1]
+                            text += ',' + sent[1].replace(u'\xa0', ' ')
                         else:
-                            text += sent[1]
+                            text += sent[1].replace(u'\xa0', ' ')
             keyphrases = []
             with open(path + '\\' + filename + '.ann', encoding='utf-8') as annfile:
                 for row in csv.reader(annfile):
