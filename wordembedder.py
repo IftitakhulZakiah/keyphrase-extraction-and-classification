@@ -14,10 +14,10 @@ class Wordembedder:
 	"""
 	def __init__(self, docs, filename=None):
 		self._encoded_docs = self.encodeDocs(docs)
-		if None:
-			self._embedding_matrix = self.createEmbeddingMatrix()
-		else:
+		if filename:
 			self._embedding_matrix = self.loadFromFile(filename)
+		else:
+			self._embedding_matrix = self.createEmbeddingMatrix()
 
 	@property
 	def encoded_docs(self):
